@@ -1,0 +1,8 @@
+
+data = load('plik_wyjsciowy.mat');  % Replace 'eeg_data.mat' with your file name
+eeg = data.data
+% Extract the first channel
+eeg = eeg(1, :);  % Result: 1x2023 row vector
+eegTransposed = eeg';
+size(eegTransposed)  % Should return [2023, 1]
+depthOfAnesthesia = openibis(eeg_transposed);
