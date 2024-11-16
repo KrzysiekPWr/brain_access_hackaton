@@ -1,0 +1,27 @@
+#proba konwertowania .fif na .mat
+import mne
+from scipy.io import savemat
+
+# Wczytaj plik .fif
+fif_file = 'plik_wejsciowy.fif'
+raw = mne.io.read_raw_fif(fif_file, preload=True)
+
+# Pobierz dane i metadane
+data = raw.get_data()  # dane EEG/MEG (kanały x próbki)
+sfreq = raw.info['sfreq']  # częstotliwość próbkowania
+ch_names = raw.info['ch_names']  # nazwy kanałów
+times = raw.times  # znaczniki czasu
+
+# Przygotuj strukturę do zapisu w .mat
+mat_dict = {
+    'data': data,                # dane czasowe
+    'sfreq': sfreq,              # częstotliwość próbkowania
+    'ch_names': ch_names,        # nazwy kanałów
+    'times': times               # czas w sekundach
+}
+
+# Zapisz dane do pliku .mat
+mat_file = 'plik_wyjsciowy.mat'
+savemat(mat_file, mat_dict)
+
+print(f'Plik został zapisany jako {mat_file}')
