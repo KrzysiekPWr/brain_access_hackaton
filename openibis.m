@@ -4,7 +4,10 @@
 
 
 % Main function
-function depthOfAnesthesia = openibis(eeg)
+function depthOfAnesthesia = openibis()
+    
+    eeg = load('eeg_data.mat').data(1, :)';
+    % print(eeg);
     [Fs, stride]    =   deal(128,0.5);
     [BSRmap, BSR]   = suppression(eeg, Fs, stride);
     components      = logPowerRatios(eeg, Fs, stride, BSRmap);
@@ -16,12 +19,26 @@ function [BSRmap, BSR]  = suppression(eeg, Fs, stride)
     BSRmap          = zeros(N, 1);
     for n = 1:N
         x = segment(eeg, n + 6.5, 2, nStride);
-        BSRmap(n) = all(abs(x-baseline(x)) <= 5);
+        BSRmap(n) = all(abs(x - baseline(x)) <= 5);
     end
-    BSR         = 100 * movmean(BSRmap, [(63/stride) - 1, 0]);
+    
+    % Ensure window size does not exceed the length of BSRmap
+    window_size = min(floor(63 / stride) - 1, length(BSRmap));
+    BSR = 100 * movmean(BSRmap, window_size);
 end
 
+function y = nanmean(x, dim)
+    if nargin < 2
+        dim = find(size(x) > 1, 1);
+    end
+    x(isnan(x)) = 0; % Replace NaN with 0 for summing
+    n = sum(~isnan(x), dim); % Count non-NaN elements
+    y = sum(x, dim) ./ n; % Divide sum by non-NaN count
+end
+
+
 function components = logPowerRatios(eeg, Fs, stride, BSRmap)
+
     [N, nStride]      = nEpochs(eeg, Fs, stride);
     [B, A]            = butter(2, 0.65/(Fs/2), 'high');
     eegHiPassFiltered = filter(B, A, eeg);
