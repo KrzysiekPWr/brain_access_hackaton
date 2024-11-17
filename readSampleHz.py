@@ -2,7 +2,7 @@ import mne
 from scipy.io import savemat
 
 # Wczytaj plik .fif
-fif_file = './20241116_2218-raw.fif'
+fif_file = './20241117_0124-raw.fif'
 raw = mne.io.read_raw_fif(fif_file, preload=True)
 
 # Wybierz jeden kanał (np. pierwszy kanał z listy)
@@ -25,7 +25,7 @@ mat_dict = {
 }
 
 # Zapisz dane do pliku .mat
-mat_file = 'plik_wyjsciowy2.mat'
+mat_file = 'plik_wyjsciowy3_new_new.mat'
 savemat(mat_file, mat_dict)
 
 print(f'Plik został zapisany jako {mat_file}')
